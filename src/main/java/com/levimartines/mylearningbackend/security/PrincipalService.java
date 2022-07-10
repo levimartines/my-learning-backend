@@ -1,0 +1,18 @@
+package com.levimartines.mylearningbackend.security;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+
+public class PrincipalService {
+
+    private PrincipalService() {
+    }
+
+    public static CustomUserDetails authenticated() {
+        try {
+            return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
