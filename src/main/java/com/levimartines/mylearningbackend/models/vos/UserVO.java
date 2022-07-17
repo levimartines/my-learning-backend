@@ -1,4 +1,4 @@
-package com.levimartines.mylearningbackend.dtos;
+package com.levimartines.mylearningbackend.models.vos;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +10,13 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-public class UserDto {
+public class UserVO {
     @Email
     @NotNull
     @NotEmpty
     private String email;
     @NotNull
     @NotEmpty
-    @Size(min = 6, max = 127)
+    @Size(min = 6, max = 255)
     private String password;
 }

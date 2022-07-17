@@ -1,8 +1,11 @@
 package com.levimartines.mylearningbackend.services;
 
-import com.levimartines.mylearningbackend.dtos.UserDto;
-import com.levimartines.mylearningbackend.entities.User;
+import com.levimartines.mylearningbackend.exceptions.NotFoundException;
+import com.levimartines.mylearningbackend.models.vos.UserVO;
+import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.repositories.UserRepository;
+
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +18,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final BCryptPasswordEncoder encoder;
 
-    public User create(User user) {
+    public User create(UserVO dto) {
+        User user = fromDto(dto);
         user.setId(null);
-        return userRepository.save(user);
+        return repository.save(user);
     }
 
-    public User fromDto(UserDto dto) {
+    public User findById(Long id) {
+        Optional<User> user = repository.findById(id);
+        if (user.isEmpty()) {
+            log.error("User with id [{}] not found", id);
+            throw new NotFoundException("User not found");
+        }
+        return user.get();
+    }
+
+    public User fromDto(UserVO dto) {
         return User.builder()
             .email(dto.getEmail())
             .password(encoder.encode(dto.getPassword()))

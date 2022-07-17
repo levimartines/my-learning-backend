@@ -1,6 +1,6 @@
 package com.levimartines.mylearningbackend.security;
 
-import com.levimartines.mylearningbackend.entities.User;
+import com.levimartines.mylearningbackend.models.entities.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

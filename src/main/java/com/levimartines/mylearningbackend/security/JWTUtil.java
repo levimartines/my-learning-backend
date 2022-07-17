@@ -3,7 +3,7 @@ package com.levimartines.mylearningbackend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JWTUtil {
-
-    @Value("${jwt.secret}")
-    private String secret;
 
     @Value("${jwt.expiration}")
     private Long expiration;
@@ -56,8 +53,7 @@ public class JWTUtil {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String getUsername(String token) {

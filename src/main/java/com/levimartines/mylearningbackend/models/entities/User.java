@@ -1,4 +1,4 @@
-package com.levimartines.mylearningbackend.entities;
+package com.levimartines.mylearningbackend.models.entities;
 
 import java.io.Serializable;
 
@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -23,10 +25,11 @@ import javax.validation.constraints.Email;
 @Table(name = "system_user")
 public class User implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     @Email
     private String email;
 

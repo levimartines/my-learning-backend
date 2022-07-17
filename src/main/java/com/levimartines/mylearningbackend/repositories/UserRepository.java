@@ -1,6 +1,6 @@
 package com.levimartines.mylearningbackend.repositories;
 
-import com.levimartines.mylearningbackend.entities.User;
+import com.levimartines.mylearningbackend.models.entities.User;
 
 import java.util.Optional;
 

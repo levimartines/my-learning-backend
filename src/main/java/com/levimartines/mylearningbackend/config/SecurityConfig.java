@@ -4,6 +4,8 @@ import com.levimartines.mylearningbackend.security.JWTAuthenticationFilter;
 import com.levimartines.mylearningbackend.security.JWTAuthorizationFilter;
 import com.levimartines.mylearningbackend.security.JWTUtil;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -47,20 +52,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
-/*
+    /*
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http.cors().and().csrf().disable();
+            http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+            http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
+            http.authorizeHttpRequests((authz) -> authz
+                    .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
+                    .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+                    .anyRequest().authenticated());
+            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            return http.build();
+        }
+    */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable();
-        http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-        http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-        http.authorizeHttpRequests((authz) -> authz
-                .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
-                .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
-                .anyRequest().authenticated());
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        return http.build();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
-*/
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
