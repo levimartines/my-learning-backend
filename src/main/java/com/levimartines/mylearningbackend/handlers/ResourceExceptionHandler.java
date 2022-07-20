@@ -1,5 +1,6 @@
 package com.levimartines.mylearningbackend.handlers;
 
+import com.levimartines.mylearningbackend.exceptions.SecurityContextException;
 import com.levimartines.mylearningbackend.exceptions.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +15,22 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<StandardError> objectNotFound(NotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError err = new StandardError(System.currentTimeMillis(),
-            HttpStatus.NOT_FOUND.value(), "Not found",
+            status.value(), status.getReasonPhrase(),
             e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+        return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(SecurityContextException.class)
+    public ResponseEntity<StandardError> authenticationContextError(SecurityContextException e,
+                                                                    HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        StandardError err = new StandardError(System.currentTimeMillis(),
+            status.value(), status.getReasonPhrase(),
+            e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
 
 }

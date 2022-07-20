@@ -3,7 +3,6 @@ package com.levimartines.mylearningbackend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
@@ -17,6 +16,9 @@ public class JWTUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    @Value("${jwt.secret}")
+    private String secret;
 
     public String generateToken(String username) {
         return Jwts.builder().setSubject(username)
@@ -53,7 +55,7 @@ public class JWTUtil {
     }
 
     private Key getSigningKey() {
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String getUsername(String token) {

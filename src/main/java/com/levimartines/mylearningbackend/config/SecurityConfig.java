@@ -10,18 +10,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
@@ -40,32 +41,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtUtil = jwtUtil;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
-        http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-        http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-        http.authorizeHttpRequests()
+        http.authorizeHttpRequests(authz -> authz
             .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
             .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
-            .anyRequest().authenticated();
+            .anyRequest().authenticated());
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        AuthenticationManager authenticationManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
+        http.addFilter(new JWTAuthenticationFilter(authenticationManager, jwtUtil));
+        http.addFilter(new JWTAuthorizationFilter(authenticationManager, jwtUtil, userDetailsService));
+        return http.build();
     }
 
-    /*
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-            http.cors().and().csrf().disable();
-            http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-            http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-            http.authorizeHttpRequests((authz) -> authz
-                    .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
-                    .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
-                    .anyRequest().authenticated());
-            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-            return http.build();
-        }
-    */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
@@ -73,11 +68,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Bean

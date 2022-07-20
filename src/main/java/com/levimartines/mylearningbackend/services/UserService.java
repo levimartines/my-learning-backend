@@ -4,7 +4,9 @@ import com.levimartines.mylearningbackend.exceptions.NotFoundException;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.repositories.UserRepository;
+import com.levimartines.mylearningbackend.security.PrincipalService;
 
+import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class UserService {
     }
 
     public User findById(Long id) {
+        checkPermissionToRetrieve(id);
         Optional<User> user = repository.findById(id);
         if (user.isEmpty()) {
             log.error("User with id [{}] not found", id);
@@ -42,5 +45,16 @@ public class UserService {
             .password(encoder.encode(dto.getPassword()))
             .admin(false)
             .build();
+    }
+
+    private void checkPermissionToRetrieve(Long id) {
+        User loggedUser = PrincipalService.getUser();
+        if (loggedUser.isNotAdmin() || loggedUser.getId().equals(id)) {
+            throw new NotFoundException("User not found");
+        }
+    }
+
+    public List<User> findAll() {
+        return repository.findAll();
     }
 }

@@ -1,11 +1,12 @@
 package com.levimartines.mylearningbackend.controllers;
 
 import com.levimartines.mylearningbackend.models.dtos.UserDTO;
-import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.models.entities.User;
+import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.services.UserService;
 
 import java.net.URI;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,5 +44,13 @@ public class UserController {
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
         User user = service.findById(id);
         return ResponseEntity.ok(mapper.map(user, UserDTO.class));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<UserDTO>> findAll() {
+        List<User> users = service.findAll();
+        List<UserDTO> response = users.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
+        return ResponseEntity.ok(response);
     }
 }

@@ -38,4 +38,8 @@ public class User implements Serializable {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
+
+    public boolean isNotAdmin() {
+        return !admin;
+    }
 }
