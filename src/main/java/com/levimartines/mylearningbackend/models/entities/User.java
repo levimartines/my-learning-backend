@@ -21,7 +21,7 @@ import javax.validation.constraints.Email;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "system_user")
 public class User implements Serializable {
     @Id

@@ -49,7 +49,7 @@ public class UserService {
 
     private void checkPermissionToRetrieve(Long id) {
         User loggedUser = PrincipalService.getUser();
-        if (loggedUser.isNotAdmin() || loggedUser.getId().equals(id)) {
+        if (loggedUser.isNotAdmin() && !loggedUser.getId().equals(id)) {
             throw new NotFoundException("User not found");
         }
     }
