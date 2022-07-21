@@ -18,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
+    private final String basePath = "/users";
+
     @Nested
     class FindById {
 
         @Test
         void shouldReturn200WhenLoggedIsAnAdmin() {
-            String url = "/users/" + loggedUser.getId();
+            String url = basePath + "/" + loggedUser.getId();
             HttpEntity<?> entity = getEntity(true);
             ResponseEntity<User> response = template.exchange(url, HttpMethod.GET, entity, User.class);
 
@@ -32,7 +34,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         void shouldReturn200WhenLoggedAndRequestedUserAreTheSame() {
-            String url = "/users/" + loggedUser.getId();
+            String url = basePath + "/" + loggedUser.getId();
             HttpEntity<?> entity = getEntity(false);
             ResponseEntity<User> response = template.exchange(url, HttpMethod.GET, entity, User.class);
 
@@ -41,7 +43,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         void shouldReturn404WhenUserNotFound() {
-            String url = "/users/9999";
+            String url = basePath + "/9999";
             HttpEntity<?> entity = getEntity(true);
             ResponseEntity<User> response = template.exchange(url, HttpMethod.GET, entity, User.class);
 
@@ -50,7 +52,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         void shouldReturn404WhenLoggedAndRequestedUserAreNotTheSameAndUserIsNotAnAdmin() {
-            String url = "/users/" + loggedAdmin.getId();
+            String url = basePath + "/" + loggedAdmin.getId();
             HttpEntity<?> entity = getEntity(false);
             ResponseEntity<User> response = template.exchange(url, HttpMethod.GET, entity, User.class);
 
@@ -62,9 +64,8 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     class FindAll {
         @Test
         void shouldReturn200IfLoggedUserIsAnAdmin() {
-            String url = "/users";
             HttpEntity<?> entity = getEntity(true);
-            var response = template.exchange(url, HttpMethod.GET, entity, User[].class);
+            var response = template.exchange(basePath, HttpMethod.GET, entity, User[].class);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
@@ -73,9 +74,8 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         void shouldReturn403IfLoggedUserIsNotAnAdmin() {
-            String url = "/users";
             HttpEntity<?> entity = getEntity(false);
-            var response = template.exchange(url, HttpMethod.GET, entity, User[].class);
+            var response = template.exchange(basePath, HttpMethod.GET, entity, User[].class);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
@@ -88,10 +88,27 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
         @Test
         void shouldCreateWhenPayloadIsValid() {
-            String url = "/users";
             UserVO payload = new UserVO("newuser@users.com", "mypassword");
-            var response = template.postForEntity(url, payload, UserDTO.class);
+            var response = template.postForEntity(basePath, payload, UserDTO.class);
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        }
+
+        @Test
+        void shouldNotCreateWhenPayloadEmailIsInvalid() {
+            UserVO payload = new UserVO("newuser", "mypassword");
+            var response = template.postForEntity(basePath, payload, UserDTO.class);
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+
+        @Test
+        void shouldNotCreateWhenPayloadEmailOrPasswordIsNullOrEmpty() {
+            UserVO payload = new UserVO();
+            var response = template.postForEntity(basePath, payload, UserDTO.class);
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+            payload = new UserVO("", "");
+            response = template.postForEntity(basePath, payload, UserDTO.class);
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
 }
