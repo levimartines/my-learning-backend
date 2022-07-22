@@ -39,7 +39,7 @@ public class Task implements Serializable {
     private String description;
 
     @Column(name = "done", nullable = false)
-    private boolean done = false;
+    private boolean done;
 
     @Column(name = "due_date")
     private LocalDate dueDate;

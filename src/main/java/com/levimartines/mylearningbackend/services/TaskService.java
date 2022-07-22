@@ -27,6 +27,11 @@ public class TaskService {
 
     public Task create(TaskVO body) {
         Task task = mapper.map(body, Task.class);
+        setUser(task);
         return repository.save(task);
+    }
+
+    private void setUser(Task task) {
+        task.setUser(PrincipalService.getUser());
     }
 }
