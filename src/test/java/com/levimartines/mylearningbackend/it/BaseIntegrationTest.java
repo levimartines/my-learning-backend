@@ -1,7 +1,6 @@
 package com.levimartines.mylearningbackend.it;
 
 import com.levimartines.mylearningbackend.Application;
-import com.levimartines.mylearningbackend.exceptions.AuthenticationExceptionImpl;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.repositories.TaskRepository;
