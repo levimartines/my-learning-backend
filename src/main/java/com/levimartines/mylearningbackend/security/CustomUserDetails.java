@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        if (nonNull(user) && user.isAdmin()) {
+        if (user.isAdmin()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
         return authorities;
@@ -33,12 +33,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return nonNull(user) ? user.getPassword() : null;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return nonNull(user) ? user.getEmail() : null;
+        return user.getEmail();
     }
 
     @Override
