@@ -1,11 +1,15 @@
 package com.levimartines.mylearningbackend.it;
 
 import com.levimartines.mylearningbackend.Application;
+import com.levimartines.mylearningbackend.exceptions.AuthenticationExceptionImpl;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.repositories.TaskRepository;
 import com.levimartines.mylearningbackend.repositories.UserRepository;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +84,11 @@ public abstract class BaseIntegrationTest {
 
     protected <T> HttpEntity<?> getEntity(T t, boolean admin) {
         ResponseEntity<Void> response = login(admin);
-        String bearerToken = response.getHeaders().get("Authorization").get(0);
+        List<String> authHeaders = response.getHeaders().get("Authorization");
+        if (authHeaders == null || authHeaders.isEmpty()) {
+            throw new RuntimeException("Authentication headers should not be null or empty. Please check the logged users");
+        }
+        String bearerToken = authHeaders.get(0);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", bearerToken);
         return new HttpEntity<>(t, headers);
@@ -95,7 +103,7 @@ public abstract class BaseIntegrationTest {
     static class DockerMySQLDataSourceInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
-        public void initialize(ConfigurableApplicationContext applicationContext) {
+        public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
 
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                 applicationContext,

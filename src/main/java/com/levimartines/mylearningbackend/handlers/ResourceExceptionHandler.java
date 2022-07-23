@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -34,6 +37,29 @@ public class ResourceExceptionHandler {
             e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<StandardError> constraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
+        var status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(System.currentTimeMillis(),
+            status.value(), "Constraint violation",
+            e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e,
+                                                      HttpServletRequest request) {
+        var status = HttpStatus.BAD_REQUEST;
+        ValidationError err = new ValidationError(System.currentTimeMillis(),
+            status.value(), "Validation error",
+            "Invalid input", request.getRequestURI());
+        for (FieldError fieldErr : e.getBindingResult().getFieldErrors()) {
+            err.add(fieldErr.getField(), fieldErr.getDefaultMessage());
+        }
+        return ResponseEntity.status(status).body(err);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardError> authenticationContextError(Exception e,
