@@ -1,5 +1,6 @@
 package com.levimartines.mylearningbackend.it;
 
+import com.levimartines.mylearningbackend.Application;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.repositories.TaskRepository;
@@ -24,7 +25,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static com.levimartines.mylearningbackend.fixtures.UserFixtures.DEFAULT_ADMIN;
 import static com.levimartines.mylearningbackend.fixtures.UserFixtures.DEFAULT_USER;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+    classes = {Application.class},
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 @ContextConfiguration(initializers = {BaseIntegrationTest.DockerMySQLDataSourceInitializer.class})
 @Testcontainers
 public abstract class BaseIntegrationTest {
