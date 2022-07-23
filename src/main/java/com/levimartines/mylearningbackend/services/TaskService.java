@@ -22,7 +22,7 @@ public class TaskService {
     private final ModelMapper mapper;
 
     public List<Task> findAll() {
-        return repository.findByUserId(PrincipalService.getId());
+        return repository.findAllByUserId(PrincipalService.getId());
     }
 
     public Task create(TaskVO body) {
