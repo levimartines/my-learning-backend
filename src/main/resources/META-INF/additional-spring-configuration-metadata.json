@@ -9,6 +9,11 @@
       "name": "jwt.expiration",
       "type": "java.lang.String",
       "description": "Time to expire JWT."
+    },
+    {
+      "name": "service.frontend-host",
+      "type": "java.lang.String",
+      "description": "Frontend host."
     }
   ]
 }
