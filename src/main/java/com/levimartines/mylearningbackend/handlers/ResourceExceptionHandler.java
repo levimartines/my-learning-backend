@@ -1,13 +1,13 @@
 package com.levimartines.mylearningbackend.handlers;
 
-import com.levimartines.mylearningbackend.exceptions.SecurityContextException;
 import com.levimartines.mylearningbackend.exceptions.NotFoundException;
+import com.levimartines.mylearningbackend.exceptions.SecurityContextException;
 
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,8 +38,9 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<StandardError> constraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegrityViolationException e,
+                                                                         HttpServletRequest request) {
         var status = HttpStatus.BAD_REQUEST;
         StandardError err = new StandardError(System.currentTimeMillis(),
             status.value(), "Constraint violation",
