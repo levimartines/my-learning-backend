@@ -30,9 +30,6 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final String frontendUrl;
 
-    private static final String[] PUBLIC_MATCHERS_GET = {
-        "/tasks"
-    };
     private static final String[] PUBLIC_MATCHERS_POST = {
         "/users"
     };
@@ -54,7 +51,6 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.csrf().disable();
         http.authorizeHttpRequests(authz -> authz
-            .antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
             .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
             .anyRequest().authenticated());
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
