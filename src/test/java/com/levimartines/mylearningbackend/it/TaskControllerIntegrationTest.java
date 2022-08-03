@@ -13,9 +13,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class TaskControllerIntegrationTest extends BaseIntegrationTest {
@@ -72,7 +72,62 @@ public class TaskControllerIntegrationTest extends BaseIntegrationTest {
         }
     }
 
-    private ResponseEntity<Void> create(TaskVO payload) {
-        return template.exchange(basePath, HttpMethod.POST, getEntity(payload, true), Void.class);
+    @Nested
+    class MarkAsDone {
+
+        @Test
+        void shouldMarkAsDone() {
+            TaskVO payload = new TaskVO("test task", LocalDate.now());
+            TaskDTO body = create(payload).getBody();
+            assertNotNull(body);
+            assertNotNull(body.getId());
+
+            String endpoint = basePath + "/done/" + body.getId();
+            var response = template.exchange(endpoint, HttpMethod.PUT, getEntity(true), Void.class);
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+
+        @Test
+        void shouldNotMarkAsDoneWhenUserIsNotTheOwner() {
+            TaskVO payload = new TaskVO("test task", LocalDate.now());
+            TaskDTO body = create(payload).getBody();
+            assertNotNull(body);
+            assertNotNull(body.getId());
+
+            String endpoint = basePath + "/done/" + body.getId();
+            var response = template.exchange(endpoint, HttpMethod.PUT, getEntity(false), Void.class);
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+    @Nested
+    class Delete {
+
+        @Test
+        void shouldDeleteWhenUserIsTheOwner() {
+            TaskVO payload = new TaskVO("test task", LocalDate.now());
+            TaskDTO body = create(payload).getBody();
+            assertNotNull(body);
+            assertNotNull(body.getId());
+
+            String endpoint = basePath + "/" + body.getId();
+            var response = template.exchange(endpoint, HttpMethod.DELETE, getEntity(true), Void.class);
+            assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        }
+
+        @Test
+        void shouldNotDeleteWhenUserIsNotTheOwner() {
+            TaskVO payload = new TaskVO("test task", LocalDate.now());
+            TaskDTO body = create(payload).getBody();
+            assertNotNull(body);
+            assertNotNull(body.getId());
+
+            String endpoint = basePath + "/" + body.getId();
+            var response = template.exchange(endpoint, HttpMethod.DELETE, getEntity(false), Void.class);
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    private ResponseEntity<TaskDTO> create(TaskVO payload) {
+        return template.exchange(basePath, HttpMethod.POST, getEntity(payload, true), TaskDTO.class);
     }
 }

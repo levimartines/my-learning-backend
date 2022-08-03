@@ -33,20 +33,21 @@ public class TaskService {
         return repository.save(task);
     }
 
-    private void setUser(Task task) {
-        task.setUser(PrincipalService.getUser());
-    }
-
     public void markAsDone(Long id) {
         Task task = findById(id);
         task.setDone(true);
         repository.save(task);
     }
 
+    public void delete(Long id) {
+        Task task = findById(id);
+        repository.delete(task);
+    }
+
     private Task findById(Long id) {
         Optional<Task> task = repository.findById(id);
         if (task.isEmpty()) {
-            log.error("User with id [{}] not found", id);
+            log.error("Task with id [{}] not found", id);
             throw new NotFoundException("Task not found");
         }
         validateOwner(task.get());
@@ -61,8 +62,8 @@ public class TaskService {
         }
     }
 
-    public void delete(Long id) {
-        Task task = findById(id);
-        repository.delete(task);
+    private void setUser(Task task) {
+        task.setUser(PrincipalService.getUser());
     }
+
 }
