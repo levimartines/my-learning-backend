@@ -3,9 +3,11 @@ package com.levimartines.mylearningbackend.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +31,13 @@ public class JWTUtil {
 
     public boolean isTokenValid(String token) {
         Claims claims = getClaims(token);
-        if (claims != null) {
-            String username = claims.getSubject();
-            Date expirationDate = claims.getExpiration();
-            Date now = new Date(System.currentTimeMillis());
-            return username != null && expirationDate != null && now.before(expirationDate);
+        if (claims == null || claims.isEmpty()) {
+            return false;
         }
-        return false;
+        String username = claims.getSubject();
+        Date expirationDate = claims.getExpiration();
+        Date now = new Date(System.currentTimeMillis());
+        return username != null && expirationDate != null && now.before(expirationDate);
     }
 
     private Claims getClaims(String token) {
@@ -44,7 +46,7 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody();
         } catch (Exception e) {
-            return null;
+            return new DefaultClaims(Collections.emptyMap());
         }
     }
 
@@ -60,7 +62,10 @@ public class JWTUtil {
 
     public String getUsername(String token) {
         Claims claims = getClaims(token);
-        return claims != null ? claims.getSubject() : null;
+        if (claims == null || claims.isEmpty()) {
+            return null;
+        }
+        return claims.getSubject();
     }
 
 }
