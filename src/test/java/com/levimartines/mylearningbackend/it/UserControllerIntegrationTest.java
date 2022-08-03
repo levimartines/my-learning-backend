@@ -4,7 +4,6 @@ import com.levimartines.mylearningbackend.models.dtos.UserDTO;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -91,6 +90,13 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
             UserVO payload = new UserVO("newuser@users.com", "mypassword");
             var response = template.postForEntity(basePath, payload, UserDTO.class);
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        }
+
+        @Test
+        void shouldNotCreateWithDuplicatedEmail() {
+            UserVO payload = new UserVO(loggedAdmin.getEmail(), "mypassword");
+            var response = template.postForEntity(basePath, payload, UserDTO.class);
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
 
         @Test

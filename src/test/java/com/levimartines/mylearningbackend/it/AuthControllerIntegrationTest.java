@@ -25,6 +25,16 @@ public class AuthControllerIntegrationTest extends BaseIntegrationTest {
         }
 
         @Test
+        void shouldReturn403WhenTokenIsInvalid() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "token");
+            var entity = new HttpEntity<>(headers);
+
+            var response = template.exchange("/users", HttpMethod.GET, entity, Void.class);
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+
+        @Test
         void shouldReturn403WhenBearerTokenIsInvalid() {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer token");

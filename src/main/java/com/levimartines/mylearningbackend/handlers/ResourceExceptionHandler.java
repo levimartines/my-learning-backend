@@ -49,7 +49,7 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e,
+    public ResponseEntity<ValidationError> validationError(MethodArgumentNotValidException e,
                                                       HttpServletRequest request) {
         var status = HttpStatus.BAD_REQUEST;
         ValidationError err = new ValidationError(System.currentTimeMillis(),
@@ -63,7 +63,7 @@ public class ResourceExceptionHandler {
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<StandardError> authenticationContextError(Exception e,
+    public ResponseEntity<StandardError> genericError(Exception e,
                                                                     HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         StandardError err = new StandardError(System.currentTimeMillis(),
