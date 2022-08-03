@@ -29,11 +29,11 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Build and analyze
+      - name: Build and analyze project
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: chmod +x gradlew && ./gradlew bootJar sonarqube --info
+        run: chmod +x gradlew && ./gradlew build sonarqube --info
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         with:
