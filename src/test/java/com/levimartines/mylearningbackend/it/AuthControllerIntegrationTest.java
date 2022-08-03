@@ -1,12 +1,11 @@
 package com.levimartines.mylearningbackend.it;
 
-import com.levimartines.mylearningbackend.models.vos.TaskVO;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
-
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
@@ -23,6 +22,16 @@ public class AuthControllerIntegrationTest extends BaseIntegrationTest {
             var payload = new UserVO("arandomemail@email.com", "someInvalidCredentials");
             var response = template.exchange(basePath, HttpMethod.POST, getEntity(payload, false), Void.class);
             assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        }
+
+        @Test
+        void shouldReturn403WhenBearerTokenIsInvalid() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer token");
+            var entity = new HttpEntity<>(headers);
+
+            var response = template.exchange("/users", HttpMethod.GET, entity, Void.class);
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
 }
