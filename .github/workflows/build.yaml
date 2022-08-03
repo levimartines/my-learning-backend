@@ -1,4 +1,4 @@
-name: Project pipeline
+name: Build and publish workflow
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'corretto'
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
