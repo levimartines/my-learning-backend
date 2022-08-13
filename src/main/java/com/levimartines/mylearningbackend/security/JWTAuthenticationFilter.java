@@ -1,8 +1,8 @@
 package com.levimartines.mylearningbackend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.levimartines.mylearningbackend.models.vos.UserVO;
 import com.levimartines.mylearningbackend.exceptions.AuthenticationExceptionImpl;
+import com.levimartines.mylearningbackend.models.vos.UserVO;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,17 +23,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final AuthenticationService authenticationService;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, AuthenticationService authenticationService) {
         setAuthenticationFailureHandler(new JWTAuthenticationFailureHandler());
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.authenticationService = authenticationService;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         try {
             UserVO creds = new ObjectMapper().readValue(req.getInputStream(), UserVO.class);
+            authenticationService.checkMFA(creds.getEmail(), req.getParameter("mfaCode"));
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
         } catch (IOException e) {
             throw new AuthenticationExceptionImpl("Authentication failed", e);

@@ -22,7 +22,7 @@ public class PrincipalService {
 
     public static User getUser() {
         CustomUserDetails authenticated = authenticated();
-         if (authenticated == null || authenticated.getUser() == null) {
+        if (authenticated == null || authenticated.getUser() == null) {
             throw new SecurityContextException("Authenticated user should not be null");
         }
         return authenticated.getUser();

@@ -14,7 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
+
+import org.jboss.aerogear.security.otp.api.Base32;
 
 @Entity
 @Getter
@@ -30,7 +31,6 @@ public class User implements Serializable {
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
-    @Email
     private String email;
 
     @Column(name = "password", nullable = false)
@@ -38,6 +38,13 @@ public class User implements Serializable {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
+
+    @Column(name = "using_mfa", nullable = false)
+    private boolean usingMfa;
+
+    @Column(name = "mfa_secret", nullable = false)
+    @Builder.Default
+    private String mfaSecret = Base32.random();
 
     public boolean isNotAdmin() {
         return !admin;

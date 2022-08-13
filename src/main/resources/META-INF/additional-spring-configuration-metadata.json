@@ -11,6 +11,11 @@
       "description": "Time to expire JWT."
     },
     {
+      "name": "qr-generator.url",
+      "type": "java.lang.String",
+      "description": "QR code generator URL."
+    },
+    {
       "name": "service.frontend-host",
       "type": "java.lang.String",
       "description": "Frontend host."

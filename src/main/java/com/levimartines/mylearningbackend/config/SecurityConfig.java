@@ -1,5 +1,6 @@
 package com.levimartines.mylearningbackend.config;
 
+import com.levimartines.mylearningbackend.security.AuthenticationService;
 import com.levimartines.mylearningbackend.security.JWTAuthenticationFilter;
 import com.levimartines.mylearningbackend.security.JWTAuthorizationFilter;
 import com.levimartines.mylearningbackend.security.JWTUtil;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
+    private final AuthenticationService authenticationService;
     private final String frontendUrl;
 
     private static final String[] PUBLIC_MATCHERS_POST = {
@@ -36,10 +38,11 @@ public class SecurityConfig {
 
     public SecurityConfig(
         @Qualifier("customUserDetailsService") UserDetailsService userDetailsService, JWTUtil jwtUtil,
-        @Value("${service.frontend-host}") String frontendUrl) {
+        @Value("${service.frontend-host}") String frontendUrl, AuthenticationService authenticationService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.frontendUrl = frontendUrl;
+        this.authenticationService = authenticationService;
     }
 
     @Bean
@@ -56,7 +59,7 @@ public class SecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         AuthenticationManager authenticationManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
-        http.addFilter(new JWTAuthenticationFilter(authenticationManager, jwtUtil));
+        http.addFilter(new JWTAuthenticationFilter(authenticationManager, jwtUtil, authenticationService));
         http.addFilter(new JWTAuthorizationFilter(authenticationManager, jwtUtil, userDetailsService));
         return http.build();
     }

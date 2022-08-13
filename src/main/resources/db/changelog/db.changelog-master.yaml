@@ -99,3 +99,21 @@ databaseChangeLog:
             referencedTableName: system_user
             referencedColumnNames: id
             validate: true
+  - changeSet:
+      id: add-mfa-attributes-user-table
+      author: levi
+      changes:
+        - addColumn:
+            tableName: system_user
+            columns:
+              - column:
+                  name: using_mfa
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mfa_secret
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
