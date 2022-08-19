@@ -47,6 +47,12 @@ public class UserService {
             .build();
     }
 
+    public void setUseMFA(Long id, boolean useMFA) {
+        User user = findById(id);
+        user.setUsingMfa(useMFA);
+        repository.save(user);
+    }
+
     private void checkPermissionToRetrieve(Long id) {
         User loggedUser = PrincipalService.getUser();
         if (loggedUser.isNotAdmin() && !loggedUser.getId().equals(id)) {

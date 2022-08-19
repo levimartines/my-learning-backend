@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +27,16 @@ public class QrCodeGeneratorService {
     private static final String SIZE = "200x200";
     private static final String TYPE = "qr";
 
-    public String generateQRUrl() {
-        String data = getUrlEncodedData();
-        return getUrlWithParams(data);
+    private final RestTemplate template;
+
+    public byte[] generateQrCode() {
+        String qrCodeUrlWithParams = generateQRUrl();
+        ResponseEntity<byte[]> response = template.getForEntity(qrCodeUrlWithParams, byte[].class);
+        return response.getBody();
     }
 
-    private String getUrlWithParams(String data) {
+    private String generateQRUrl() {
+        String data = getUrlEncodedData();
         return String.format("%s?cht=%s&chs=%s&chl=%s", url, TYPE, SIZE, data);
     }
 
