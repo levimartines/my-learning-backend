@@ -13,8 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import static java.util.Objects.nonNull;
-
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -58,6 +56,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return nonNull(user);
+        return true;
     }
 }

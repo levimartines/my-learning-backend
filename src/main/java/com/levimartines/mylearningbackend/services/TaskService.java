@@ -2,6 +2,7 @@ package com.levimartines.mylearningbackend.services;
 
 import com.levimartines.mylearningbackend.exceptions.NotFoundException;
 import com.levimartines.mylearningbackend.models.entities.Task;
+import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.TaskVO;
 import com.levimartines.mylearningbackend.repositories.TaskRepository;
 import com.levimartines.mylearningbackend.security.PrincipalService;
@@ -30,6 +31,7 @@ public class TaskService {
     public Task create(TaskVO body) {
         Task task = mapper.map(body, Task.class);
         setUser(task);
+        log.info("Creating new task [{}] for user [{}]", task.getDescription(), task.getUser().getEmail());
         return repository.save(task);
     }
 
@@ -41,6 +43,7 @@ public class TaskService {
 
     public void delete(Long id) {
         Task task = findById(id);
+        log.info("Deleting task [{}]", id);
         repository.delete(task);
     }
 
@@ -55,9 +58,9 @@ public class TaskService {
     }
 
     private void validateOwner(Task task) {
-        Long loggedUserId = PrincipalService.getUserId();
-        if (!loggedUserId.equals(task.getUser().getId())) {
-            log.error("User [{}] is not the owner of the task [{}]", loggedUserId, task.getId());
+        User loggedUser = PrincipalService.getUser();
+        if (!loggedUser.getId().equals(task.getUser().getId())) {
+            log.error("User [{}] is not the owner of the task [{}]", loggedUser.getId(), task.getId());
             throw new NotFoundException("Task not found");
         }
     }

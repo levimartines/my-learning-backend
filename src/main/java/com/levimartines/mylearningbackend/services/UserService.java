@@ -26,6 +26,7 @@ public class UserService {
     public User create(UserVO dto) {
         User user = fromDto(dto);
         user.setId(null);
+        log.info("Creating new User [{}]", dto.getEmail());
         return repository.save(user);
     }
 
@@ -50,6 +51,8 @@ public class UserService {
     public void setUseMFA(Long id, boolean useMFA) {
         User user = findById(id);
         user.setUsingMfa(useMFA);
+
+        log.info("{} MFA for User [{}]", useMFA ? "Enabling" : "Disabling", user.getEmail());
         repository.save(user);
     }
 
