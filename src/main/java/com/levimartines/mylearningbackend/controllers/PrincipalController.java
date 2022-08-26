@@ -5,6 +5,7 @@ import com.levimartines.mylearningbackend.security.PrincipalService;
 import com.levimartines.mylearningbackend.services.QrCodeGeneratorService;
 import com.levimartines.mylearningbackend.services.UserService;
 
+import java.net.URI;
 import java.util.Base64;
 
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/principal")
@@ -42,5 +46,18 @@ public class PrincipalController {
         byte[] qrCode = qrCodeService.generateQrCode();
         String base64 = Base64.getEncoder().encodeToString(qrCode);
         return ResponseEntity.ok(base64);
+    }
+
+    @GetMapping("/picture")
+    public ResponseEntity<String> getProfilePicture() {
+        byte[] picture = userService.getProfilePicture();
+        String base64 = Base64.getEncoder().encodeToString(picture);
+        return ResponseEntity.ok(base64);
+    }
+
+    @PostMapping("/picture")
+    public ResponseEntity<URI> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+        userService.uploadProfilePicture(file);
+        return ResponseEntity.ok().build();
     }
 }
