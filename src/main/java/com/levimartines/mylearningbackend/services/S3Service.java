@@ -37,18 +37,24 @@ public class S3Service {
     }
 
     public byte[] getFile(String fileName) {
+        if (notExist(fileName)) {
+            return new byte[0];
+        }
         S3Object object = s3Client.getObject(bucketName, fileName);
         if (object == null) {
-            log.error("No file [{}] in s3 bucket", fileName);
+            log.error("Error downloading file [{}] in s3 bucket [{}]", fileName, bucketName);
             throw new S3Exception("Unable to retrieve file from s3");
         }
         try {
             return IOUtils.toByteArray(object.getObjectContent());
         } catch (IOException e) {
             log.error("Error converting file [{}] to byte array", fileName);
-            throw new S3Exception("Unable to retrieve file from s3");
+            throw new S3Exception("Error retrieving file");
         }
     }
 
+    private boolean notExist(String fileName) {
+        return !s3Client.doesObjectExist(bucketName, fileName);
+    }
 
 }

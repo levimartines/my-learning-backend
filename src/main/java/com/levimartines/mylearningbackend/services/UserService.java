@@ -38,7 +38,7 @@ public class UserService {
         User user = fromDto(dto);
         user.setId(null);
         log.info("Creating new User [{}]", dto.getEmail());
-        return repository.save(user);
+        return save(user);
     }
 
     public User findById(Long id) {
@@ -64,7 +64,7 @@ public class UserService {
         user.setUsingMfa(useMFA);
 
         log.info("{} MFA for User [{}]", useMFA ? "Enabling" : "Disabling", user.getEmail());
-        repository.save(user);
+        save(user);
     }
 
     private void checkPermissionToRetrieve(Long id) {
@@ -92,5 +92,9 @@ public class UserService {
         InputStream inputStream = imageService.getInputStream(jpgImage, "jpg");
         String fileName = imagePrefix + user.getId() + ".jpg";
         s3Service.uploadFile(inputStream, fileName, "image");
+    }
+
+    private User save(User user) {
+        return repository.save(user);
     }
 }

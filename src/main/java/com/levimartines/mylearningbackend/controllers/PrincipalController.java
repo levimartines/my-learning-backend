@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.levimartines.mylearningbackend.utils.Base64Utils.encode;
+
 @RestController
 @RequestMapping("/principal")
 @RequiredArgsConstructor
@@ -51,8 +53,7 @@ public class PrincipalController {
     @GetMapping("/picture")
     public ResponseEntity<String> getProfilePicture() {
         byte[] picture = userService.getProfilePicture();
-        String base64 = Base64.getEncoder().encodeToString(picture);
-        return ResponseEntity.ok(base64);
+        return picture.length == 0 ? ResponseEntity.noContent().build() : ResponseEntity.ok(encode(picture));
     }
 
     @PostMapping("/picture")
