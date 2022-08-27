@@ -22,11 +22,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static com.levimartines.mylearningbackend.fixtures.UserFixtures.DEFAULT_ADMIN;
 import static com.levimartines.mylearningbackend.fixtures.UserFixtures.DEFAULT_USER;
+import static org.testcontainers.utility.DockerImageName.parse;
 
 @SpringBootTest(
     classes = {Application.class},
@@ -37,10 +39,14 @@ import static com.levimartines.mylearningbackend.fixtures.UserFixtures.DEFAULT_U
 public abstract class BaseIntegrationTest {
 
     @ClassRule
-    public static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:latest");
+    public static PostgreSQLContainer<?> postgreContainer = new PostgreSQLContainer<>("postgres:alpine");
+    @ClassRule
+    public static GenericContainer<?> redis = new GenericContainer<>(parse("redis:alpine"))
+        .withExposedPorts(6379);
 
     static {
-        mySQLContainer.start();
+        postgreContainer.start();
+        redis.start();
     }
 
     @Autowired
@@ -106,9 +112,9 @@ public abstract class BaseIntegrationTest {
 
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                 applicationContext,
-                "spring.datasource.url=" + mySQLContainer.getJdbcUrl(),
-                "spring.datasource.username=" + mySQLContainer.getUsername(),
-                "spring.datasource.password=" + mySQLContainer.getPassword()
+                "spring.datasource.url=" + postgreContainer.getJdbcUrl(),
+                "spring.datasource.username=" + postgreContainer.getUsername(),
+                "spring.datasource.password=" + postgreContainer.getPassword()
             );
         }
     }

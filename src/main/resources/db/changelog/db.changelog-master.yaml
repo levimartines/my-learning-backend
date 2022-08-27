@@ -1,5 +1,11 @@
 databaseChangeLog:
   - changeSet:
+      id: create-hibernate-sequence
+      author: levi
+      changes:
+        - sql:
+            sql:  create sequence hibernate_sequence start 1 increment 1
+  - changeSet:
       id: create-table-system-user
       author: levi
       changes:
@@ -41,7 +47,7 @@ databaseChangeLog:
               - column:
                   name: updated_at
                   type: datetime
-                  defaultValueComputed: NOW() ON UPDATE NOW()
+                  defaultValueComputed: NOW()
                   constraints:
                     nullable: false
   - changeSet:
@@ -84,7 +90,7 @@ databaseChangeLog:
               - column:
                   name: updated_at
                   type: datetime
-                  defaultValueComputed: NOW() ON UPDATE NOW()
+                  defaultValueComputed: NOW()
                   constraints:
                     nullable: false
               - column:
