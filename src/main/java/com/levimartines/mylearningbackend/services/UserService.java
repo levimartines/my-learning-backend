@@ -3,42 +3,53 @@ package com.levimartines.mylearningbackend.services;
 import com.levimartines.mylearningbackend.exceptions.NotFoundException;
 import com.levimartines.mylearningbackend.models.entities.User;
 import com.levimartines.mylearningbackend.models.vos.UserVO;
+import com.levimartines.mylearningbackend.properties.CryptoProperties;
+import com.levimartines.mylearningbackend.properties.ImageProperties;
 import com.levimartines.mylearningbackend.repositories.UserRepository;
 import com.levimartines.mylearningbackend.security.PrincipalService;
+import com.levimartines.mylearningbackend.services.email.EmailService;
+import com.levimartines.mylearningbackend.utils.Crypto;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repository;
     private final BCryptPasswordEncoder encoder;
     private final ImageService imageService;
     private final S3Service s3Service;
+    private final EmailService emailService;
+    private final CryptoProperties cryptoProperties;
+    private final ImageProperties imageProperties;
 
-    @Value("${user.picture.prefix}")
-    private String imagePrefix;
-    @Value("${user.picture.size}")
-    private String imageSize;
+    public UserService(UserRepository repository, BCryptPasswordEncoder encoder, ImageService imageService, S3Service s3Service, EmailService emailService, CryptoProperties cryptoProperties, ImageProperties imageProperties) {
+        this.repository = repository;
+        this.encoder = encoder;
+        this.imageService = imageService;
+        this.s3Service = s3Service;
+        this.emailService = emailService;
+        this.cryptoProperties = cryptoProperties;
+        this.imageProperties = imageProperties;
+    }
 
     public User create(UserVO dto) {
         User user = fromDto(dto);
         user.setId(null);
         log.info("Creating new User [{}]", dto.getEmail());
-        return save(user);
+        user = save(user);
+        emailService.sendConfirmAccountEmail(user);
+        return user;
     }
 
     public User findById(Long id) {
@@ -52,11 +63,7 @@ public class UserService {
     }
 
     public User fromDto(UserVO dto) {
-        return User.builder()
-            .email(dto.getEmail())
-            .password(encoder.encode(dto.getPassword()))
-            .admin(false)
-            .build();
+        return User.builder().email(dto.getEmail()).password(encoder.encode(dto.getPassword())).admin(false).build();
     }
 
     public void setUseMFA(Long id, boolean useMFA) {
@@ -80,7 +87,7 @@ public class UserService {
 
     public byte[] getProfilePicture() {
         User user = PrincipalService.getUser();
-        String fileName = imagePrefix + user.getId() + ".jpg";
+        String fileName = imageProperties.getImagePrefix() + user.getId() + ".jpg";
         return s3Service.getFile(fileName);
     }
 
@@ -88,13 +95,20 @@ public class UserService {
         User user = PrincipalService.getUser();
         BufferedImage jpgImage = imageService.getJpgFromFile(file);
         jpgImage = imageService.cropSquare(jpgImage);
-        jpgImage = imageService.resize(jpgImage, Integer.parseInt(imageSize));
+        jpgImage = imageService.resize(jpgImage, Integer.parseInt(imageProperties.getImageSize()));
         InputStream inputStream = imageService.getInputStream(jpgImage, "jpg");
-        String fileName = imagePrefix + user.getId() + ".jpg";
+        String fileName = imageProperties.getImagePrefix() + user.getId() + ".jpg";
         s3Service.uploadFile(inputStream, fileName, "image");
     }
 
+    public void confirmRegistration(String code) {
+        String id = Crypto.decrypt(code, cryptoProperties.getSecret(), cryptoProperties.getSalt());
+        User user = repository.findById(Long.valueOf(id)).orElseThrow(() -> new NotFoundException("User not found"));
+        user.setRegistrationConfirmed(true);
+        save(user);
+    }
+
     private User save(User user) {
-        return repository.save(user);
+        return repository.saveAndFlush(user);
     }
 }

@@ -39,12 +39,19 @@ public class User implements Serializable {
     @Column(name = "admin", nullable = false)
     private boolean admin;
 
+    @Column(name = "active", nullable = false)
+    @Builder.Default
+    private boolean active = true;
+
+    @Column(name = "registration_confirmed", nullable = false)
+    private boolean registrationConfirmed;
+
     @Column(name = "using_mfa", nullable = false)
     private boolean usingMfa;
 
-    @Column(name = "mfa_secret", nullable = false)
+    @Column(name = "secret", nullable = false)
     @Builder.Default
-    private String mfaSecret = Base32.random();
+    private String secret = Base32.random();
 
     public boolean isNotAdmin() {
         return !admin;

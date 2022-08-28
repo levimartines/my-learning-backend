@@ -19,8 +19,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -52,5 +54,11 @@ public class UserController {
         List<User> users = service.findAll();
         List<UserDTO> response = users.stream().map(user -> mapper.map(user, UserDTO.class)).toList();
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/confirm-registration")
+    public ResponseEntity<Void> confirmRegistration(@RequestParam("code") String code) {
+        service.confirmRegistration(code);
+        return ResponseEntity.noContent().build();
     }
 }

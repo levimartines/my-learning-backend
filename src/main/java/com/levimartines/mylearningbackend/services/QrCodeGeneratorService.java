@@ -43,7 +43,7 @@ public class QrCodeGeneratorService {
     private String getUrlEncodedData() {
         User user = PrincipalService.getUser();
         String data = String.format("otpauth://totp/%s:%s?secret=%s&issuer=%s",
-            appName, user.getEmail(), user.getMfaSecret(), getIssuer());
+            appName, user.getEmail(), user.getSecret(), getIssuer());
         return URLEncoder.encode(data, StandardCharsets.UTF_8);
     }
 

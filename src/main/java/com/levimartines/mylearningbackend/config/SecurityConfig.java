@@ -35,6 +35,9 @@ public class SecurityConfig {
     private static final String[] PUBLIC_MATCHERS_POST = {
         "/users"
     };
+    private static final String[] PUBLIC_MATCHERS_PUT = {
+        "/users/confirm-registration"
+    };
 
     public SecurityConfig(
         @Qualifier("customUserDetailsService") UserDetailsService userDetailsService, JWTUtil jwtUtil,
@@ -55,6 +58,7 @@ public class SecurityConfig {
         http.csrf().disable();
         http.authorizeHttpRequests(authz -> authz
             .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+            .antMatchers(HttpMethod.PUT, PUBLIC_MATCHERS_PUT).permitAll()
             .anyRequest().authenticated());
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

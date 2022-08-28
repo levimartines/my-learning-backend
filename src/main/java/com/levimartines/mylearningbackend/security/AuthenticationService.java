@@ -12,7 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.levimartines.mylearningbackend.utils.NumberUtils.isValidLong;
+import static com.levimartines.mylearningbackend.utils.Number.isValidLong;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class AuthenticationService {
         }
         User user = optional.get();
         if (user.isUsingMfa()) {
-            Totp totp = new Totp(user.getMfaSecret());
+            Totp totp = new Totp(user.getSecret());
             if (!isValidLong(verificationCode) || !totp.verify(verificationCode)) {
                 throw new BadCredentialsException("Invalid verification code");
             }
