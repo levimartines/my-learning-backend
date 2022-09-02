@@ -1,10 +1,9 @@
 package com.levimartines.mylearningbackend.config;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +21,11 @@ public class S3Config {
     @Value("${s3.region}")
     private String region;
 
-    @Bean
-    public AmazonS3 s3Client() {
-        AWSCredentials credentials = new BasicAWSCredentials(awsId, awsKey);
-        return AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(region)
+    @Bean(destroyMethod = "close")
+    public S3Client s3Client() {
+        return S3Client.builder()
+            .region(Region.of(region))
+            .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(awsId, awsKey)))
             .build();
     }
 }

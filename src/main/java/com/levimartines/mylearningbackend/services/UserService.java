@@ -87,7 +87,7 @@ public class UserService {
 
     public byte[] getProfilePicture() {
         User user = PrincipalService.getUser();
-        String fileName = imageProperties.getImagePrefix() + user.getId() + ".jpg";
+        String fileName = imageProperties.getPrefix() + user.getId() + ".jpg";
         return s3Service.getFile(fileName);
     }
 
@@ -95,9 +95,9 @@ public class UserService {
         User user = PrincipalService.getUser();
         BufferedImage jpgImage = imageService.getJpgFromFile(file);
         jpgImage = imageService.cropSquare(jpgImage);
-        jpgImage = imageService.resize(jpgImage, Integer.parseInt(imageProperties.getImageSize()));
+        jpgImage = imageService.resize(jpgImage, Integer.parseInt(imageProperties.getSize()));
         InputStream inputStream = imageService.getInputStream(jpgImage, "jpg");
-        String fileName = imageProperties.getImagePrefix() + user.getId() + ".jpg";
+        String fileName = imageProperties.getPrefix() + user.getId() + ".jpg";
         s3Service.uploadFile(inputStream, fileName, "image");
     }
 
