@@ -1,8 +1,9 @@
 package com.levimartines.mylearningbackend.models.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,26 +26,24 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = "task")
-public class Task implements Serializable {
+@Builder(toBuilder = true)
+@Table(name = "system_order")
+public class Order implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "done", nullable = false)
-    private boolean done;
-
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+    @OneToMany(mappedBy = "id.order")
+    private Set<CoffeeOrder> items = new HashSet<>();
 
     @Column(name = "updated_at", nullable = false)
     @Builder.Default

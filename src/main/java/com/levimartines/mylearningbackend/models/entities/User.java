@@ -1,6 +1,7 @@
 package com.levimartines.mylearningbackend.models.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,6 +53,15 @@ public class User implements Serializable {
     @Column(name = "secret", nullable = false)
     @Builder.Default
     private String secret = Base32.random();
+
+    @Column(name = "updated_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Override
+    public String toString() {
+        return String.format("ID: %s, email: %s", id, email);
+    }
 
     public boolean isNotAdmin() {
         return !admin;

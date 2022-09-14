@@ -1,7 +1,6 @@
 package com.levimartines.mylearningbackend.models.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -15,8 +14,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -24,26 +21,20 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = "task")
-public class Task implements Serializable {
+@Builder(toBuilder = true)
+@Table(name = "coffee")
+public class Coffee implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
-    @Column(name = "done", nullable = false)
-    private boolean done;
-
-    @Column(name = "due_date")
-    private LocalDate dueDate;
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
