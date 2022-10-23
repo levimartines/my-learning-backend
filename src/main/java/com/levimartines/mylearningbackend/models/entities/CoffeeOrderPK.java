@@ -1,15 +1,15 @@
 package com.levimartines.mylearningbackend.models.entities;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Embeddable
 @Getter
@@ -18,12 +18,22 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 public class CoffeeOrderPK implements Serializable {
 
-    @ManyToOne
-    @JoinColumn(name = "coffee_id", nullable = false)
-    private Coffee coffee;
+    @Column(name = "coffee_id", nullable = false)
+    private Long coffee;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @Column(name = "order_id", nullable = false)
+    private Long order;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CoffeeOrderPK that = (CoffeeOrderPK) o;
+        return Objects.equals(coffee, that.coffee) && Objects.equals(order, that.order);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coffee, order);
+    }
 }
