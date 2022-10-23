@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.jboss.aerogear.security.otp.Totp;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import static com.levimartines.mylearningbackend.utils.Number.isValidLong;
@@ -23,7 +22,7 @@ public class AuthenticationService {
     public void checkMFA(String email, String verificationCode) {
         Optional<User> optional = userRepository.findByEmailIgnoreCase(email);
         if (optional.isEmpty()) {
-            throw new UsernameNotFoundException(email);
+            throw new BadCredentialsException(email);
         }
         User user = optional.get();
         if (user.isUsingMfa()) {
