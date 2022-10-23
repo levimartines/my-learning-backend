@@ -64,6 +64,11 @@
       "name": "crypto.salt",
       "type": "java.lang.String",
       "description": "SaltSecret to be used to encrypt and decrypt."
+    },
+    {
+      "name": "sqs.region",
+      "type": "java.lang.String",
+      "description": "AWS SQS region."
     }
   ]
 }
