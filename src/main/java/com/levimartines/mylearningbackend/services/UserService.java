@@ -15,14 +15,17 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository repository;
@@ -32,16 +35,6 @@ public class UserService {
     private final EmailService emailService;
     private final CryptoProperties cryptoProperties;
     private final ImageProperties imageProperties;
-
-    public UserService(UserRepository repository, BCryptPasswordEncoder encoder, ImageService imageService, S3Service s3Service, EmailService emailService, CryptoProperties cryptoProperties, ImageProperties imageProperties) {
-        this.repository = repository;
-        this.encoder = encoder;
-        this.imageService = imageService;
-        this.s3Service = s3Service;
-        this.emailService = emailService;
-        this.cryptoProperties = cryptoProperties;
-        this.imageProperties = imageProperties;
-    }
 
     public User create(UserVO dto) {
         User user = fromDto(dto);
@@ -104,11 +97,16 @@ public class UserService {
     public void confirmRegistration(String code) {
         String id = Crypto.decrypt(code, cryptoProperties.getSecret(), cryptoProperties.getSalt());
         User user = repository.findById(Long.valueOf(id)).orElseThrow(() -> new NotFoundException("User not found"));
+        if (user.isRegistrationConfirmed()) {
+            log.info("User [{}] already confirmed registration", id);
+            return;
+        }
         user.setRegistrationConfirmed(true);
         save(user);
     }
 
-    private User save(User user) {
-        return repository.saveAndFlush(user);
+    @CacheEvict(value = "users", key = "#user.email")
+    public User save(User user) {
+        return repository.save(user);
     }
 }
