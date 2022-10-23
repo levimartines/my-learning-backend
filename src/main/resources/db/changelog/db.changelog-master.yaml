@@ -191,6 +191,7 @@ databaseChangeLog:
               - column:
                   name: created_at
                   type: datetime
+                  defaultValueComputed: now()
                   constraints:
                     nullable: false
               - column:
@@ -218,14 +219,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: coffee_pk
+                    primaryKeyName: coffee_order_coffee_pk
               - column:
                   name: order_id
                   type: bigint
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: order_pk
+                    primaryKeyName: coffee_order_order_pk
               - column:
                   name: user_id
                   type: bigint
@@ -239,6 +240,7 @@ databaseChangeLog:
               - column:
                   name: created_at
                   type: datetime
+                  defaultValueComputed: now()
                   constraints:
                     nullable: false
               - column:
