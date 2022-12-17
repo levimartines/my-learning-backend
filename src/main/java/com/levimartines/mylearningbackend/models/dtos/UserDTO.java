@@ -11,4 +11,5 @@ public class UserDTO {
     private Long id;
     private String email;
     private boolean usingMfa;
+    private boolean registrationConfirmed;
 }

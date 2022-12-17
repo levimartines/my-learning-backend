@@ -1,8 +1,7 @@
 package com.levimartines.mylearningbackend.services.email;
 
 import com.levimartines.mylearningbackend.models.entities.User;
-
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 public interface EmailService {
 

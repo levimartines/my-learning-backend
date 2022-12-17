@@ -1,11 +1,5 @@
 databaseChangeLog:
   - changeSet:
-      id: create-hibernate-sequence
-      author: levi
-      changes:
-        - sql:
-            sql:  create sequence hibernate_sequence start 1 increment 1
-  - changeSet:
       id: create-table-system-user
       author: levi
       changes:
@@ -128,6 +122,8 @@ databaseChangeLog:
             referencedTableName: system_user
             referencedColumnNames: id
             validate: true
+        - sql:
+            sql: create sequence system_user_seq start 1 increment 1
   - changeSet:
       id: create-table-coffee
       author: levi

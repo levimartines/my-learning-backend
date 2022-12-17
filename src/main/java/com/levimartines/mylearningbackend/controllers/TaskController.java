@@ -4,12 +4,11 @@ import com.levimartines.mylearningbackend.models.dtos.TaskDTO;
 import com.levimartines.mylearningbackend.models.entities.Task;
 import com.levimartines.mylearningbackend.models.vos.TaskVO;
 import com.levimartines.mylearningbackend.services.TaskService;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-
-import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

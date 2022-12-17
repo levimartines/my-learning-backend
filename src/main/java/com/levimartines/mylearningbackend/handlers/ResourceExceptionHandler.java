@@ -2,10 +2,9 @@ package com.levimartines.mylearningbackend.handlers;
 
 import com.levimartines.mylearningbackend.exceptions.NotFoundException;
 import com.levimartines.mylearningbackend.exceptions.SecurityContextException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

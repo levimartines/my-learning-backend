@@ -10,8 +10,8 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;

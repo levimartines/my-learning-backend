@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
@@ -57,8 +59,8 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.csrf().disable();
         http.authorizeHttpRequests(authz -> authz
-            .antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
-            .antMatchers(HttpMethod.PUT, PUBLIC_MATCHERS_PUT).permitAll()
+            .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
+            .requestMatchers(HttpMethod.PUT, PUBLIC_MATCHERS_PUT).permitAll()
             .anyRequest().authenticated());
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

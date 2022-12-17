@@ -1,5 +1,13 @@
 package com.levimartines.mylearningbackend.models.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -11,14 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 @Entity
 @Getter
 @Setter
@@ -29,7 +29,7 @@ import javax.persistence.Table;
 public class Order implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_order_id_seq")
     @Column(name = "id", nullable = false)
     private Long id;
 
