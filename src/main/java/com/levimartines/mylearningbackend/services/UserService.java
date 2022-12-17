@@ -18,7 +18,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +32,7 @@ public class UserService {
     private final ImageService imageService;
     private final S3Service s3Service;
     private final EmailService emailService;
+    private final CacheService cacheService;
     private final CryptoProperties cryptoProperties;
     private final ImageProperties imageProperties;
 
@@ -105,8 +105,8 @@ public class UserService {
         save(user);
     }
 
-    @CacheEvict(value = "users", key = "#user.email")
     public User save(User user) {
+        cacheService.evict("users", user.getEmail());
         return repository.save(user);
     }
 }
