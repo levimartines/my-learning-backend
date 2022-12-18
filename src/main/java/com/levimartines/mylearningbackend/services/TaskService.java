@@ -25,7 +25,7 @@ public class TaskService {
     private final ModelMapper mapper;
 
     public List<Task> findAll() {
-        return repository.findAllByUserId(PrincipalService.getUserId());
+        return repository.findAllNotDoneByUserId(PrincipalService.getUserId());
     }
 
     public Task create(TaskVO body) {
