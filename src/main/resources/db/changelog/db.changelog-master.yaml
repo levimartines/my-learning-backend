@@ -3,13 +3,15 @@ databaseChangeLog:
       id: create-table-system-user
       author: levi
       changes:
+        - sql:
+            sql: create sequence system_user_id_seq start 1 increment 1
         - createTable:
             tableName: system_user
             columns:
               - column:
                   name: id
                   type: bigint
-                  autoIncrement: true
+                  valueComputed: system_user_id_seq.NEXTVAL
                   constraints:
                     nullable: false
                     primaryKey: true
@@ -71,13 +73,15 @@ databaseChangeLog:
       id: create-table-task
       author: levi
       changes:
+        - sql:
+            sql: create sequence task_id_seq start 1 increment 1
         - createTable:
             tableName: task
             columns:
               - column:
                   name: id
                   type: bigint
-                  autoIncrement: true
+                  valueComputed: task_id_seq.NEXTVAL
                   constraints:
                     nullable: false
                     primaryKey: true
@@ -128,13 +132,15 @@ databaseChangeLog:
       id: create-table-coffee
       author: levi
       changes:
+        - sql:
+            sql: create sequence coffee_id_seq start 1 increment 1
         - createTable:
             tableName: coffee
             columns:
               - column:
                   name: id
                   type: bigint
-                  autoIncrement: true
+                  valueComputed: coffee_id_seq.NEXTVAL
                   constraints:
                     nullable: false
                     primaryKey: true
@@ -168,13 +174,15 @@ databaseChangeLog:
       id: create-table-system-order
       author: levi
       changes:
+        - sql:
+            sql: create sequence system_order_id_seq start 1 increment 1
         - createTable:
             tableName: system_order
             columns:
               - column:
                   name: id
                   type: bigint
-                  autoIncrement: true
+                  valueComputed: system_order_id_seq.NEXTVAL
                   constraints:
                     nullable: false
                     primaryKey: true

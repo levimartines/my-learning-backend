@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class Coffee implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "coffee_id_seq")
+    @SequenceGenerator(name = "coffee_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

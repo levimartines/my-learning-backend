@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
@@ -30,6 +31,7 @@ public class Order implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_order_id_seq")
+    @SequenceGenerator(name = "system_order_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
