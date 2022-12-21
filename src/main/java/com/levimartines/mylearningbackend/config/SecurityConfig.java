@@ -34,6 +34,10 @@ public class SecurityConfig {
     private final AuthenticationService authenticationService;
     private final String frontendUrl;
 
+    private static final String[] PUBLIC_MATCHERS_SWAGGER = {
+        "/swagger-ui/**",
+        "/v3/api-docs/**"
+    };
     private static final String[] PUBLIC_MATCHERS_POST = {
         "/users"
     };
@@ -61,6 +65,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authz -> authz
             .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
             .requestMatchers(HttpMethod.PUT, PUBLIC_MATCHERS_PUT).permitAll()
+            .requestMatchers(PUBLIC_MATCHERS_SWAGGER).permitAll()
             .anyRequest().authenticated());
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
