@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,37 +20,34 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ResourceExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<StandardError> objectNotFound(NotFoundException e, HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> objectNotFound(NotFoundException e) {
+        log.error(e.getMessage(), e);
         HttpStatus status = HttpStatus.NOT_FOUND;
-        StandardError err = new StandardError(System.currentTimeMillis(),
-            status.value(), status.getReasonPhrase(),
-            e.getMessage(), request.getRequestURI());
+        ProblemDetail err = ProblemDetail.forStatusAndDetail(status, e.getMessage());
         return ResponseEntity.status(status).body(err);
     }
 
     @ExceptionHandler(SecurityContextException.class)
-    public ResponseEntity<StandardError> authenticationContextError(SecurityContextException e,
-                                                                    HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> authenticationContextError(SecurityContextException e) {
+        log.error(e.getMessage(), e);
         HttpStatus status = HttpStatus.FORBIDDEN;
-        StandardError err = new StandardError(System.currentTimeMillis(),
-            status.value(), status.getReasonPhrase(),
-            e.getMessage(), request.getRequestURI());
+        ProblemDetail err = ProblemDetail.forStatusAndDetail(status, e.getMessage());
         return ResponseEntity.status(status).body(err);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<StandardError> dataIntegrityViolationException(DataIntegrityViolationException e,
+    public ResponseEntity<ProblemDetail> dataIntegrityViolationException(DataIntegrityViolationException e,
                                                                          HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         var status = HttpStatus.BAD_REQUEST;
-        StandardError err = new StandardError(System.currentTimeMillis(),
-            status.value(), "Constraint violation",
-            e.getMessage(), request.getRequestURI());
+        ProblemDetail err = ProblemDetail.forStatusAndDetail(status, e.getMessage());
         return ResponseEntity.status(status).body(err);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationError> validationError(MethodArgumentNotValidException e,
                                                       HttpServletRequest request) {
+        log.error(e.getMessage(), e);
         var status = HttpStatus.BAD_REQUEST;
         ValidationError err = new ValidationError(System.currentTimeMillis(),
             status.value(), "Validation error",
@@ -62,12 +60,10 @@ public class ResourceExceptionHandler {
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<StandardError> genericError(Exception e,
-                                                                    HttpServletRequest request) {
+    public ResponseEntity<ProblemDetail> genericError(Exception e) {
+        log.error(e.getMessage(), e);
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        StandardError err = new StandardError(System.currentTimeMillis(),
-            status.value(), status.getReasonPhrase(),
-            e.getMessage(), request.getRequestURI());
+        ProblemDetail err = ProblemDetail.forStatusAndDetail(status, e.getMessage());
         return ResponseEntity.status(status).body(err);
     }
 
