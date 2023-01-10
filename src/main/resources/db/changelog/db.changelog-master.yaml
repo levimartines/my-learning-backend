@@ -264,3 +264,13 @@ databaseChangeLog:
             baseColumnNames: order_id
             referencedTableName: system_order
             referencedColumnNames: id
+  - changeSet:
+      id: populate-coffees-table
+      author: levi
+      changes:
+        - sql:
+            sql: "INSERT INTO coffee (id, name, price, updated_at)
+                  VALUES (nextval('coffee_id_seq'), 'Express', 1.99, now()),
+                    (nextval('coffee_id_seq'), 'Mochaccino', 2.99, now()),
+                    (nextval('coffee_id_seq'), 'Chococcino', 2.27, now()),
+                    (nextval('coffee_id_seq'), 'Coffee with Milk', 3.01, now())"
